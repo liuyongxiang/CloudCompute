@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://cdn.hcharts.cn/highcharts/highcharts.js"></script>
+<script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>云计算2班</title>
+</head>
+<body>
+    <div id="left" style="width: 50%;height: 100%;display: block;float: left">
+        <div id="container1" style="height: 460px;width: 880px;border-color: cornflowerblue;
+        border-style: solid;border-width: 1px;margin:0 auto"></div>
+        <div id="container2" style="height: 460px;width: 880px;border-color: cornflowerblue;
+        border-style: solid;border-width: 1px;margin:0 auto"></div>
+    </div>
+    <div id="right" style="width: 50%;height: 100%;display: block;float: right">
+        <div id="container3" style="height: 460px;width: 880px;border-color: cornflowerblue;
+        border-style: solid;border-width: 1px;margin:0 auto"></div>
+        <div id="container4" style="height: 460px;width: 880px;border-color: cornflowerblue;
+        border-style: solid;border-width: 1px;margin:0 auto"></div>
+    </div>
+
+
+</body>
+<script type="text/javascript">
+    var chart1 = null
+    var chart2 = null
+    var chart3 = null
+    var chart4 = null
+    var initdate = "2017-01-02"
+    $(document).ready(function(){
+        setInterval(function () {
+            initdate = addDate(initdate)
+            console.log(initdate)
+
+            // container1
+            axios({
+                method: 'get',
+                url: 'http://localhost:3000/data',
+                params: {
+                    Trdtim: initdate
+                }
+            })
+                .then((response) => {
+                    // 登陆成功的情况
+                    var point = null
+                    var series = chart1.series[0]
+                    if (response.data.length > 0) {
+                        console.log(response.data)
+                        point = parseFloat(response.data[0].Avgpri)
+                         // 当数据点数量超过 20 个，则指定删除第一个点
+
+                        // 新增点操作
+                        //具体的参数详见：https://api.hcharts.cn/highcharts#Series.addPoint
+
+                    } else {
+                        console.log(0)
+                    }
+                    shift = series.data.length > 20;
+                    chart1.series[0].addPoint(point, true, shift);
+                })
+                .catch(function (error) {
+                    console.log(error)
+                })
+
+        },2000)
+    });
+    $(function () {
+        // 全局配置，针对页面上所有图表有效
+        Highcharts.setOptions({
+            chart: {
+                backgroundColor: {
+                    linearGradient: [0, 0, 500, 500],
+                    stops: [
+                        [0, 'rgb(255, 255, 255)'],
+                        [1, 'rgb(240, 240, 255)']
+                    ]
+                },
+                borderWidth: 2,
+                plotBackgroundColor: 'rgba(255, 255, 255, .9)',
+                plotShadow: true,
+                plotBorderWidth: 1
+            }
+        });
+        chart1 = new Highcharts.Chart({
+            defaultSeriesType:'line',
+            chart: {
+                renderTo: 'container1',
+            },
+            plotOptions: {
+                line: {
+                    connectNulls:true,//该设置会连接空值点
+                },
+                series: {
+                    label: {
+                        connectorAllowed: false
+                    },
+                    pointStart: Date.UTC(2017, 0, 3),
+                    pointInterval: 3600 * 1000 * 24
+                }
+            },
+            xAxis:{
+                type: 'datetime',
+                title:{
+                    text:'时间/日'
+                },
+                labels: {
+                    rotation: -45  // 设置轴标签旋转角度
+                },
+                dateTimeLabelFormats: {
+                    millisecond: '%H:%M:%S.%L',
+                    second: '%H:%M:%S',
+                    minute: '%H:%M',
+                    hour: '%H:%M',
+                    day: '%Y-%m-%d',
+                    week: '%m-%d',
+                    month: '%Y-%m',
+                    year: '%Y'
+                }
+            },
+            yAxis:{
+                title:{
+                    text:'单位/元'
+                }
+            },
+            title: {
+                text: '股价趋势'
+            },
+            subtitle: {
+                text: '自2017/01/03起（以京东方A为例）'
+            },
+            tooltip: {
+                valuePrefix: '￥'
+                // valueSuffix: '元'
+            },
+            series: [{
+                name: "京东方A",
+                data: [],
+                // pointStart: Date.UTC(2010, 0, 1)
+                // pointInterval: 3600 * 1000 * 24// one hour
+            }]
+        });
+        chart2 = new Highcharts.Chart({
+            chart: {
+                renderTo: 'container2'
+            },
+            xAxis:{
+                title:{
+                    text:'时间/日'
+                },
+                labels: {
+                    rotation: -45  // 设置轴标签旋转角度
+                }
+            },
+            yAxis:{
+                title:{
+                    text:'单位/元'
+                }
+            },
+            title: {
+                text: '股价对比折线图'
+            },
+            subtitle: {
+                text: '自2017/01/03起（摘选多支股票为例）'
+            },
+            series: [{
+                name: "316",
+                data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+                // pointStart: Date.UTC(2010, 0, 1),
+                // pointInterval: 3600 * 1000 // one hour
+            },{
+                name: "318",
+                data: [135.6, 148.5, 216.4, 194.1, 95.6, 54.4,29.9, 71.5, 106.4, 129.2, 144.0, 176.0]
+            },{
+                name: "320",
+                data: [95.6, 54.4,29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1]
+            }]
+        });
+        chart3 = new Highcharts.Chart({
+            chart: {
+                renderTo: 'container3',
+                type: 'column'
+            },
+            xAxis:{
+                title:{
+                    text:'时间/月'
+                },
+                labels: {
+                    rotation: -45  // 设置轴标签旋转角度
+                }
+            },
+            yAxis:{
+                title:{
+                    text:'单位/支'
+                }
+            },
+            title: {
+                text: '股票销售量趋势'
+            },
+            subtitle: {
+                text: '自2017/01/03起（以多支股票为例）'
+            },
+            series: [{
+                data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
+                // pointStart: Date.UTC(2010, 0, 1),
+                // pointInterval: 3600 * 1000 // one hour
+            }]
+        });
+        chart4 = new Highcharts.Chart({
+            chart: {
+                renderTo: 'container4',
+                type: 'column'
+            },
+            xAxis:{
+                title:{
+                    text:'时间/月'
+                },
+                labels: {
+                    rotation: -45  // 设置轴标签旋转角度
+                }
+            },
+            yAxis:{
+                title:{
+                    text:'单位/元'
+                }
+            },
+            title: {
+                text: '股票销售总额'
+            },
+            subtitle: {
+                text: '自2017/01/03起（以多支股票为例）'
+            },
+            series: [{
+                data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
+                // pointStart: Date.UTC(2010, 0, 1),
+                // pointInterval: 3600 * 1000 // one hour
+            }]
+        });
+    });
+    function addDate(date, days) {
+        if (days == undefined || days == '') {
+            days = 1;
+        }
+        var date = new Date(date);
+        date.setDate(date.getDate() + days);
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        return date.getFullYear() + '-' + getFormatDate(month) + '-' + getFormatDate(day);
+    }
+    function getFormatDate(arg) {
+        if (arg == undefined || arg == '') {
+            return '';
+        }
+
+        var re = arg + '';
+        if (re.length < 2) {
+            re = '0' + re;
+        }
+
+        return re;
+    }
+
+</script>
+
+</html>
+
+
+
