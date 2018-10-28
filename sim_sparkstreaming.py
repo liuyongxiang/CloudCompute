@@ -56,7 +56,7 @@ def main(sc):
     my_spark = SparkSession \
         .builder \
         .appName("test db") \
-        .config("spark.mongodb.output.uri", "mongodb://188.131.181.36/stock.transaction_result") \
+        .config("spark.mongodb.output.uri", "mongodb://188.xxx.xxx.xxx/stock.transaction_result") \
         .getOrCreate()
 
     result.foreachRDD(insertMongo)

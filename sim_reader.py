@@ -16,7 +16,7 @@ def init_datelist():
     return datelist
 
 
-myclient = pymongo.MongoClient("mongodb://188.131.181.36:27017/")
+myclient = pymongo.MongoClient("mongodb://188.xxx.xxx.xxx:27017/")
 mydb = myclient["stock"]
 mycol = mydb["transaction"]
 
